@@ -132,7 +132,7 @@ extension SearchTrainViewController:UITextFieldDelegate {
         dropDown.selectionAction = { (index: Int, item: String) in
             if textField == self.sourceTxtField {
                 self.transitPoints.source = item
-            }else {
+            } else {
                 self.transitPoints.destination = item
             }
             textField.text = item
@@ -150,11 +150,11 @@ extension SearchTrainViewController:UITextFieldDelegate {
             var desiredSearchText = inputedText
             if string != "\n" && !string.isEmpty{
                 desiredSearchText = desiredSearchText + string
-            }else {
+            } else {
                 desiredSearchText = String(desiredSearchText.dropLast())
             }
 
-//            dropDown.dataSource = stationsList
+            dropDown.dataSource = trains.map { $0.stationFullName }
             dropDown.show()
             dropDown.reloadAllComponents()
         }
@@ -177,14 +177,13 @@ extension SearchTrainViewController:UITableViewDataSource,UITableViewDelegate {
         cell.trainCode.text = train.trainCode
         cell.souceInfoLabel.text = train.stationFullName
         cell.sourceTimeLabel.text = train.expDeparture
-        if let _destinationDetails = train.destinationDetails {
-            cell.destinationInfoLabel.text = _destinationDetails.locationFullName
-            cell.destinationTimeLabel.text = _destinationDetails.expDeparture
-        }
+        cell.destinationInfoLabel.text = train.destination
+        cell.destinationTimeLabel.text = train.destinnationTime
+
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 140
+        return 140 // ToDo: Move to constants
     }
 }

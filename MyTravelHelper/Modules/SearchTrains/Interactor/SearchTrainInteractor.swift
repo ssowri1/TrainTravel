@@ -17,10 +17,9 @@ class SearchTrainInteractor: PresenterToInteractorProtocol {
 
     func fetchallStations() {
         if Reach().isNetworkReachable() == true {
-            Alamofire.request("http://api.irishrail.ie/realtime/realtime.asmx/getAllStationsXML")
-                .response { (response) in
-                let station = try? XMLDecoder().decode(Stations.self, from: response.data!)
-                self.presenter!.stationListFetched(list: station!.stationsList)
+            let url = URL(string: "http://api.irishrail.ie/realtime/realtime.asmx/getAllStationsXML")
+            ServiceWorker.fetch(url: url!) { (response: Stations) in
+                self.presenter!.stationListFetched(list: response.stationsList)
             }
         } else {
             self.presenter!.showNoInterNetAvailabilityMessage()
@@ -30,11 +29,10 @@ class SearchTrainInteractor: PresenterToInteractorProtocol {
     func fetchTrainsFromSource(sourceCode: String, destinationCode: String) {
         _sourceStationCode = sourceCode
         _destinationStationCode = destinationCode
-        let urlString = "http://api.irishrail.ie/realtime/realtime.asmx/getStationDataByCodeXML?StationCode=\(sourceCode)"
+        let url = URL(string: "http://api.irishrail.ie/realtime/realtime.asmx/getStationDataByCodeXML?StationCode=\(sourceCode)")
         if Reach().isNetworkReachable() {
-            Alamofire.request(urlString).response { (response) in
-                let stationData = try? XMLDecoder().decode(StationData.self, from: response.data!)
-                if let _trainsList = stationData?.trainsList {
+            ServiceWorker.fetch(url: url!) { (response: StationData?) in
+                if let _trainsList = response?.trainsList {
                     self.proceesTrainListforDestinationCheck(trainsList: _trainsList)
                 } else {
                     self.presenter!.showNoTrainAvailbilityFromSource()
@@ -66,9 +64,9 @@ class SearchTrainInteractor: PresenterToInteractorProtocol {
                         let desiredStationMoment = _movements.filter{$0.locationCode.caseInsensitiveCompare(self._destinationStationCode) == .orderedSame}
                         let isDestinationAvailable = desiredStationMoment.count == 1
 
-                        if isDestinationAvailable  && sourceIndex! < destinationIndex! {
-                            _trainsList[index].destinationDetails = desiredStationMoment.first
-                        }
+//                        if isDestinationAvailable  && sourceIndex! < destinationIndex! {
+//                            _trainsList[index].destinationDetails = desiredStationMoment.first
+//                        }
                     }
                     group.leave()
                 }
@@ -78,8 +76,17 @@ class SearchTrainInteractor: PresenterToInteractorProtocol {
         }
 
         group.notify(queue: DispatchQueue.main) {
-            let sourceToDestinationTrains = _trainsList.filter{$0.destinationDetails != nil}
+            let sourceToDestinationTrains = _trainsList
             self.presenter!.fetchedTrainsList(trainsList: sourceToDestinationTrains)
         }
     }
 }
+
+// For unit testing
+#if DEBUG
+extension SearchTrainInteractor {
+    func trainListforDestinationCheck(trainsList: [StationTrain]) {
+        proceesTrainListforDestinationCheck(trainsList: trainsList)
+    }
+}
+#endif

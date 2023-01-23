@@ -23,9 +23,10 @@ struct StationTrain: Codable {
     var trainDate: String
     var dueIn: Int
     var lateBy:Int
-    var expArrival:String
-    var expDeparture:String
-    var destinationDetails:TrainMovement?
+    var expArrival: String
+    var expDeparture: String
+    var destination: String
+    var destinnationTime: String
 
     enum CodingKeys: String, CodingKey {
         case trainCode = "Traincode"
@@ -36,9 +37,11 @@ struct StationTrain: Codable {
         case lateBy = "Late"
         case expArrival = "Exparrival"
         case expDeparture = "Expdepart"
+        case destination = "Destination"
+        case destinnationTime = "Destinationtime"
     }
 
-    init(trainCode: String, fullName: String, stationCode: String, trainDate: String, dueIn: Int,lateBy:Int,expArrival:String,expDeparture:String) {
+    init(trainCode: String, fullName: String, stationCode: String, trainDate: String, dueIn: Int,lateBy:Int,expArrival:String,expDeparture:String, destination: String, destinationTime: String) {
         self.trainCode = trainCode
         self.stationFullName = fullName
         self.stationCode = stationCode
@@ -47,6 +50,8 @@ struct StationTrain: Codable {
         self.lateBy = lateBy
         self.expArrival = expArrival
         self.expDeparture = expDeparture
+        self.destination = destination
+        self.destinnationTime = destinationTime
     }
 
     init(from decoder: Decoder) throws {
@@ -59,8 +64,10 @@ struct StationTrain: Codable {
         let late = try values.decode(Int.self, forKey: .lateBy)
         let arrival = try values.decode(String.self, forKey: .expArrival)
         let departure = try values.decode(String.self, forKey: .expDeparture)
+        let destination = try values.decode(String.self, forKey: .destination)
+        let destinnationTime = try values.decode(String.self, forKey: .destinnationTime)
 
-        self.init(trainCode: trainCode, fullName: fullName, stationCode: code, trainDate: trainDate, dueIn: dueIn, lateBy: late, expArrival: arrival, expDeparture: departure)
+        self.init(trainCode: trainCode, fullName: fullName, stationCode: code, trainDate: trainDate, dueIn: dueIn, lateBy: late, expArrival: arrival, expDeparture: departure, destination: destination, destinationTime: destinnationTime)
     }
 }
 

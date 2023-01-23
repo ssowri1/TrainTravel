@@ -30,6 +30,7 @@ class SearchTrainPresenterTests: XCTestCase {
     override func tearDown() {
         presenter = nil
     }
+    
 }
 
 
@@ -71,5 +72,24 @@ class SearchTrainInteractorMock:PresenterToInteractorProtocol {
 
     func fetchTrainsFromSource(sourceCode: String, destinationCode: String) {
 
+    }
+    
+    private func proceesTrainListforDestinationCheck(trainsList: [StationTrain]) {
+        var _trainsList = trainsList
+        let today = Date()
+        let group = DispatchGroup()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        let dateString = formatter.string(from: today)
+        
+            group.enter()
+            let response = TrainMovementsData(trainMovements: [TrainMovement(trainCode: "A182", locationCode: "4637", locationFullName: "Aftan", expDeparture: "12.22"), TrainMovement(trainCode: "A182", locationCode: "4637", locationFullName: "Aftan", expDeparture: "12.22"), TrainMovement(trainCode: "A182", locationCode: "4637", locationFullName: "Aftan", expDeparture: "12.22"), TrainMovement(trainCode: "A182", locationCode: "4637", locationFullName: "Aftan", expDeparture: "12.22"), TrainMovement(trainCode: "A182", locationCode: "4637", locationFullName: "Aftan", expDeparture: "12.22")])
+            group.leave()
+
+
+        group.notify(queue: DispatchQueue.main) {
+            let sourceToDestinationTrains = _trainsList
+            self.presenter!.fetchedTrainsList(trainsList: sourceToDestinationTrains)
+        }
     }
 }
