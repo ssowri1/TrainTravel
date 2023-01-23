@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol ViewToPresenterProtocol: class{
+protocol ViewToPresenterProtocol: AnyObject {
     var view: PresenterToViewProtocol? {get set}
     var interactor: PresenterToInteractorProtocol? {get set}
     var router: PresenterToRouterProtocol? {get set}
@@ -16,7 +16,7 @@ protocol ViewToPresenterProtocol: class{
     func searchTapped(source:String,destination:String)
 }
 
-protocol PresenterToViewProtocol: class{
+protocol PresenterToViewProtocol: AnyObject {
     func saveFetchedStations(stations:[Station]?)
     func showInvalidSourceOrDestinationAlert()
     func updateLatestTrainList(trainsList: [StationTrain])
@@ -25,17 +25,17 @@ protocol PresenterToViewProtocol: class{
     func showNoInterNetAvailabilityMessage()
 }
 
-protocol PresenterToRouterProtocol: class {
+protocol PresenterToRouterProtocol: AnyObject {
     static func createModule()-> SearchTrainViewController
 }
 
-protocol PresenterToInteractorProtocol: class {
+protocol PresenterToInteractorProtocol: AnyObject {
     var presenter:InteractorToPresenterProtocol? {get set}
     func fetchallStations()
     func fetchTrainsFromSource(sourceCode:String,destinationCode:String)
 }
 
-protocol InteractorToPresenterProtocol: class {
+protocol InteractorToPresenterProtocol: AnyObject {
     func stationListFetched(list:[Station])
     func fetchedTrainsList(trainsList:[StationTrain]?)
     func showNoTrainAvailbilityFromSource()

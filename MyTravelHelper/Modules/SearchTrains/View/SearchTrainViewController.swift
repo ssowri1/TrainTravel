@@ -14,6 +14,7 @@ class SearchTrainViewController: UIViewController {
     @IBOutlet weak var destinationTextField: UITextField!
     @IBOutlet weak var sourceTxtField: UITextField!
     @IBOutlet weak var trainsListTable: UITableView!
+    @IBOutlet weak var favouriteButton: UIButton!
 
     var stationsList:[Station] = [Station]()
     var trains:[StationTrain] = [StationTrain]()
@@ -38,6 +39,39 @@ class SearchTrainViewController: UIViewController {
         view.endEditing(true)
         showProgressIndicator(view: self.view)
         presenter?.searchTapped(source: transitPoints.source, destination: transitPoints.destination)
+    }
+    
+    @IBAction func setAsFavouriteAction(_ sender: Any) {
+        let favourites = UserDefaults.favourites
+        if let source = sourceTxtField.text, let destination = destinationTextField.text {
+            if favourites.count == 0 {
+                UserDefaults.favourites = [source, destination]
+            } else {
+                let array: [String] = favourites + [source, destination]
+                UserDefaults.favourites = []
+                UserDefaults.favourites = array.unique()
+            }
+        }
+    }
+    
+    @IBAction func showFavourites(_ sender: UIButton) {
+        if sender.tag == 21 {
+            showDropDown(textField: sourceTxtField)
+        } else {
+            showDropDown(textField: destinationTextField)
+        }
+    }
+    
+    func showDropDown(textField: UITextField) {
+        dropDown = DropDown()
+        dropDown.anchorView = textField
+        dropDown.direction = .bottom
+        dropDown.bottomOffset = CGPoint(x: 0, y:(dropDown.anchorView?.plainView.bounds.height)!)
+        dropDown.dataSource = UserDefaults.favourites
+        dropDown.selectionAction = { (index: Int, item: String) in
+            textField.text = item
+        }
+        dropDown.show()
     }
 }
 
@@ -125,6 +159,10 @@ extension SearchTrainViewController:UITextFieldDelegate {
             dropDown.reloadAllComponents()
         }
         return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        favouriteButton.isHidden = sourceTxtField.text?.count == 0 || destinationTextField.text?.count == 0
     }
 }
 
